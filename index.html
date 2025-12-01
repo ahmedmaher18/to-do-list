@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional Animated To-Do List</title>
+  <style>
+    /* خلفية متدرجة متحركة */
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      background: linear-gradient(-45deg, #6a11cb, #2575fc, #ff6a00, #fbd786);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* البطاقة الرئيسية */
+    .todo-app {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px 25px;
+      border-radius: 20px;
+      width: 400px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .todo-app h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+      font-size: 30px;
+      letter-spacing: 1px;
+    }
+
+    /* إدخال المهمة */
+    .input-group {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #ccc;
+      border-radius: 12px 0 0 12px;
+      outline: none;
+      font-size: 16px;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    .input-group input:focus {
+      border-color: #6c63ff;
+      box-shadow: 0 0 10px rgba(108, 99, 255, 0.4);
+    }
+
+    .input-group button {
+      padding: 0 25px;
+      border: none;
+      background: #6c63ff;
+      color: white;
+      font-size: 22px;
+      border-radius: 0 12px 12px 0;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    }
+
+    .input-group button:hover {
+      background: #5750d1;
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    /* قائمة المهام */
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: #f1f4ff;
+      padding: 14px 18px;
+      border-radius: 15px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #333;
+      font-size: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      opacity: 0;
+      transform: translateY(-30px);
+      animation: slideIn 0.5s forwards;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    li:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    li.completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+      background: #d6ffd6;
+    }
+
+    /* أزرار المهام */
+    .actions button {
+      margin-left: 10px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 18px;
+      transition: transform 0.2s, color 0.3s;
+    }
+
+    .actions button:hover {
+      transform: scale(1.3);
+      color: #6c63ff;
+    }
+
+    /* أنيميشن الإضافة */
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="todo-app">
+    <h1>To-Do List</h1>
+    <div class="input-group">
+      <input type="text" id="new-task-input" placeholder="Write your task here..." />
+      <button id="add-task-btn">+</button>
+    </div>
+    <ul id="task-list"></ul>
+  </div>
+
+  <script>
+    const input = document.getElementById('new-task-input');
+    const btn = document.getElementById('add-task-btn');
+    const list = document.getElementById('task-list');
+
+    function addTask() {
+      const text = input.value.trim();
+      if (text === '') return;
+
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="task-text">${text}</span>
+        <div class="actions">
+          <button class="complete-btn">✔</button>
+          <button class="delete-btn">🗑</button>
+        </div>
+      `;
+      list.appendChild(li);
+      input.value = '';
+      attachEvents(li);
+    }
+
+    function attachEvents(li) {
+      const completeBtn = li.querySelector('.complete-btn');
+      const deleteBtn = li.querySelector('.delete-btn');
+
+      completeBtn.addEventListener('click', () => {
+        li.classList.toggle('completed');
+      });
+
+      deleteBtn.addEventListener('click', () => {
+        li.style.animation = 'slideOut 0.4s forwards';
+        li.addEventListener('animationend', () => li.remove());
+      });
+    }
+
+    btn.addEventListener('click', addTask);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addTask();
+    });
+
+    // أنيميشن الخروج
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes slideOut {
+        to {
+          opacity: 0;
+          transform: translateX(50px);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
